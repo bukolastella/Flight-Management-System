@@ -1,16 +1,22 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
 @Entity()
 export class Flight {
+  @ApiProperty()
   @ObjectIdColumn()
-  id: string;
+  _id: ObjectId;
 
+  @ApiProperty()
   @Column()
   flightNumber: string;
 
+  @ApiProperty()
   @Column({ unique: true })
   airline: string;
 
+  @ApiProperty()
   @Column()
   aircraftModel: string;
 }

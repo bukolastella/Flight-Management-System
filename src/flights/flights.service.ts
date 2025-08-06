@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { FlightDto } from './dto/flight.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Flight } from './entities/flight.entity';
-import { Repository } from 'typeorm';
+import { ObjectId, Repository } from 'typeorm';
+import { UpdateFlightDto } from './dto/update-flight.dto';
 
 @Injectable()
 export class FlightsService {
@@ -20,11 +21,11 @@ export class FlightsService {
     return this.flightRepo.find();
   }
 
-  findOne(id: string) {
-    return this.flightRepo.findOneBy({ id });
+  findOne(id: ObjectId) {
+    return this.flightRepo.findOneBy({ _id: id });
   }
 
-  update(id: string, updateFlightDto: FlightDto) {
+  update(id: string, updateFlightDto: UpdateFlightDto) {
     return this.flightRepo.update(id, updateFlightDto);
   }
 
