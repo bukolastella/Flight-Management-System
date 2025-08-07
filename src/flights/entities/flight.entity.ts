@@ -13,7 +13,7 @@ export class Flight {
   flightNumber: string;
 
   @ApiProperty()
-  @Column({ unique: true })
+  @Column()
   airline: string;
 
   @ApiProperty()

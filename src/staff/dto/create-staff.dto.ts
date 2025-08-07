@@ -16,6 +16,7 @@ export enum StaffRole {
 export class CreateStaffDto {
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({ enum: StaffRole })
@@ -24,8 +25,6 @@ export class CreateStaffDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
   @IsMongoId()
   defaultFlight?: string;
 }
