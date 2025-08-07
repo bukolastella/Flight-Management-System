@@ -12,7 +12,6 @@ import { ApiResponse } from '@nestjs/swagger';
 import { UpdateFlightDto } from './dto/update-flight.dto';
 import { Flight } from './entities/flight.entity';
 import { FlightDto } from './dto/flight.dto';
-import { ObjectId } from 'typeorm';
 
 @Controller('flights')
 export class FlightsController {
@@ -44,7 +43,7 @@ export class FlightsController {
     type: Flight,
   })
   @Get(':id')
-  findOne(@Param('id') id: ObjectId) {
+  findOne(@Param('id') id: string) {
     return this.flightsService.findOne(id);
   }
 
@@ -55,7 +54,6 @@ export class FlightsController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    await this.flightsService.remove(id);
-    return null;
+    return this.flightsService.remove(id);
   }
 }

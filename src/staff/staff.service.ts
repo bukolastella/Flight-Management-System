@@ -1,19 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
-import { ObjectId } from 'mongodb';
+import { FlightsService } from 'src/flights/flights.service';
+import { toObjectId } from 'src/utils/util';
 
 @Injectable()
 export class StaffService {
   constructor(
     @InjectRepository(Staff)
     private readonly staffRepo: Repository<Staff>,
+    private readonly flightsService: FlightsService,
   ) {}
 
-  create(createStaffDto: CreateStaffDto) {
+  async create(createStaffDto: CreateStaffDto) {
+    const { defaultFlight } = createStaffDto;
+    if (defaultFlight) {
+      await this.flightsService.findOne(defaultFlight);
+    }
     const staff = this.staffRepo.create(createStaffDto);
     return this.staffRepo.save(staff);
   }
@@ -22,15 +28,27 @@ export class StaffService {
     return this.staffRepo.find();
   }
 
-  findOne(id: string) {
-    return this.staffRepo.findOneBy({ _id: new ObjectId(id) });
+  async findOne(id: string) {
+    const staff = await this.staffRepo.findOneBy({
+      _id: toObjectId(id),
+    });
+
+    if (!staff) {
+      throw new NotFoundException('Staff not found');
+    }
+
+    return staff;
   }
 
-  update(id: string, updateStaffDto: UpdateStaffDto) {
-    return this.staffRepo.update(id, updateStaffDto);
+  async update(id: string, updateStaffDto: UpdateStaffDto) {
+    const existingStaff = await this.findOne(id);
+    Object.assign(existingStaff, updateStaffDto);
+    return this.staffRepo.save(existingStaff);
   }
 
-  remove(id: string) {
-    return this.staffRepo.delete(id);
+  async remove(id: string) {
+    const staff = await this.findOne(id);
+    await this.staffRepo.delete(id);
+    return staff;
   }
 }
